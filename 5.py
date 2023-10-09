@@ -116,6 +116,24 @@ def gui_check_equivalent_keys():
             f.write(f"No equivalent keys found for {plaintext_entry.get()}\n")
             result_var.set(f"Saved results to {fpath}")
 
+def check_for_collisions():
+    for plaintext in range(256):  # 遍历所有可能的明文分组
+        plaintext_bin = format(plaintext, '08b')
+        seen_ciphertexts = {}
+        
+        for key in range(1024):  # 遍历所有可能的密钥
+            key_bin = format(key, '010b')
+            ciphertext = sdes_encrypt(plaintext_bin, key_bin)
+            
+            if ciphertext in seen_ciphertexts:
+                print(f"Collision found! For plaintext {plaintext_bin}, keys {key_bin} and {seen_ciphertexts[ciphertext]} produce the same ciphertext {ciphertext}.")
+                return True
+            else:
+                seen_ciphertexts[ciphertext] = key_bin
+
+    print("No collisions found.")
+    return False
+
 def sdes_encrypt(plaintext, key):
     key1, key2 = generate_keys(key)
     
@@ -258,4 +276,5 @@ brute_force_button.pack(pady=10)
 # 在GUI上添加一个按钮来触发等价密钥检查
 check_equiv_keys_button = Button(root, text="Check Equivalent Keys", command=gui_check_equivalent_keys, bg='#3F51B5', fg='white', padx=20)
 check_equiv_keys_button.pack(pady=10)
+check_for_collisions()
 root.mainloop()
