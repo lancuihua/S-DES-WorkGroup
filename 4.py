@@ -30,25 +30,20 @@ def sbox(input, sbox):
 def f_func(R, subkey):
     # Expansion
     expanded = permute(R, EP)
-    print(f"Expanded: {expanded}")
     
     # XOR with subkey
     xor_result = [str(int(expanded[i]) ^ int(subkey[i])) for i in range(8)]
-    print(f"XOR with subkey {subkey}: {xor_result}")
     
     # S-Boxes
     left_xor = xor_result[:4]
     right_xor = xor_result[4:]
     left_sbox = sbox(left_xor, Sbox1)
     right_sbox = sbox(right_xor, Sbox2)
-    print(f"Left S-box output: {left_sbox}, Right S-box output: {right_sbox}")
     
     combined = left_sbox + right_sbox
-    print(f"Combined S-box output: {combined}")
     
     # P4 permutation
     output = permute(combined, P4)
-    print(f"P4 output: {output}")
     return output
 
 def generate_keys(key):
@@ -165,11 +160,19 @@ def gui_brute_force():
         result_var.set("Ensure plaintext and ciphertext are both 8 bits!")
         return
 
+    start_time = time.time()  # 开始计时
+
     key = brute_force(known_plaintext, known_ciphertext)
+
+    elapsed_time = time.time() - start_time  # 计算暴力破解所用的时间
+
     if key:
-        result_var.set(f"Key found: {key}")
+        print(elapsed_time)
+        result_var.set(f"Key found: {key} in {elapsed_time:.2f} seconds")  # 在GUI中展示找到的密钥和所用时间
     else:
+        print(elapsed_time)
         result_var.set("Key not found!")
+
 
 
 # 创建基本窗口
